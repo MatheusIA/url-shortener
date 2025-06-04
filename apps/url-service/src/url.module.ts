@@ -3,7 +3,7 @@ import { UrlController } from './url.controller';
 import { UrlService } from './url.service';
 import { PrismaModule } from 'libs/prisma/src';
 import { EnvModule } from 'env/env.module';
-import { JwtAuthModule } from 'apps/auth-service/src/security/jwt.module';
+import { JwtAuthModule } from 'libs/security/jwt.module';
 import { UrlRepository } from '../interfaces/url-repository';
 import { PrismaUrlRepository } from '../repositories/prisma-url-repository';
 
