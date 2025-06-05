@@ -9,7 +9,6 @@ import { CreateUrlDTO } from '../dto/create-url-DTO';
 import { Url } from '@prisma/client';
 import { generateUrlShortener } from 'utils/generate-url-shortner';
 import { EnvService } from 'env/env.service';
-import { RedirectUrlDTO } from '../dto/redirect-url-DTO';
 
 @Injectable()
 export class UrlService {
@@ -76,5 +75,36 @@ export class UrlService {
       shortURL: `${appUrl}/${url.shortURL}`,
       clicks: url.clicks,
     }));
+  }
+
+  async deleteURL(urlId: number, userId: number) {
+    const url = await this.urlRepository.deleteURL(urlId, userId);
+
+    if (!url) {
+      throw new NotFoundException(
+        'URL informada nã encontrada ou usuário sem permissão para essa ação',
+      );
+    }
+
+    return { message: 'URL deletada com sucesso !' };
+  }
+
+  async updateURL(urlId: number, userId: number, destination: string) {
+    const update = await this.urlRepository.updateURL(
+      urlId,
+      userId,
+      destination,
+    );
+
+    if (!update) {
+      throw new NotFoundException(
+        'URL informada nã encontrada ou usuário sem permissão para essa ação',
+      );
+    }
+
+    return {
+      message: 'URL atualizada com sucesso !',
+      destination: update.destination,
+    };
   }
 }

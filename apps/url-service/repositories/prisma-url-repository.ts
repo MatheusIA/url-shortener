@@ -54,4 +54,43 @@ export class PrismaUrlRepository implements UrlRepository {
 
     return list.length ? list : null;
   }
+
+  async deleteURL(urlId: number, userId: number) {
+    await this.prismaService.url.update({
+      where: {
+        id: urlId,
+        userId,
+        deletedAt: null,
+      },
+      data: {
+        deletedAt: new Date(),
+      },
+    });
+
+    return { message: 'URL deletada com sucesso.' };
+  }
+
+  async updateURL(urlId: number, userId: number, destination: string) {
+    const url = await this.prismaService.url.findFirst({
+      where: {
+        id: urlId,
+        userId,
+        deletedAt: null,
+      },
+    });
+
+    if (!url) {
+      return null;
+    }
+
+    const updated = await this.prismaService.url.update({
+      where: { id: urlId },
+      data: {
+        destination,
+        updatedAt: new Date(),
+      },
+    });
+
+    return { destination: updated.destination };
+  }
 }
