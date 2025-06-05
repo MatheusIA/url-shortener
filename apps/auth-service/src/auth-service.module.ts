@@ -6,8 +6,8 @@ import { RegisterUsersService } from './users/register-user.service';
 import { PrismaUsersRepository } from '../repositories/prisma-users-repository';
 import { UsersRepository } from '../interfaces/users-repository';
 import { PrismaModule } from 'libs/prisma/src';
-import { JwtAuthService } from './security/jwt.service';
-import { JwtAuthModule } from './security/jwt.module';
+import { JwtAuthService } from '../../../libs/security/jwt.service';
+import { JwtAuthModule } from '../../../libs/security/jwt.module';
 import { EnvModule } from 'env/env.module';
 
 @Module({

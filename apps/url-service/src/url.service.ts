@@ -2,6 +2,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { UrlRepository } from '../interfaces/url-repository';
 import { CreateUrlDTO } from '../dto/create-url-DTO';
@@ -18,7 +19,10 @@ export class UrlService {
     private readonly envService: EnvService,
   ) {}
 
-  async execute(createUrlDTO: CreateUrlDTO, userId?: string): Promise<Url> {
+  async createShortenUrl(
+    createUrlDTO: CreateUrlDTO,
+    userId?: string,
+  ): Promise<Url> {
     try {
       const { originalUrl } = createUrlDTO;
       let urlShortener: string;
@@ -45,5 +49,62 @@ export class UrlService {
     } catch (error) {
       throw new InternalServerErrorException('Erro ao criar URL');
     }
+  }
+
+  async redirect(shortURL: string): Promise<any> {
+    try {
+      const url = await this.urlRepository.findByShortURL(shortURL);
+
+      if (!url) {
+        throw new NotFoundException('URL não encontrada');
+      }
+
+      await this.urlRepository.incrementClicks(url.id);
+
+      return url.destination;
+    } catch (error) {}
+  }
+
+  async listMyUrls(userId: number) {
+    const urls = await this.urlRepository.listUrlsByUserId(userId);
+
+    const appUrl = this.envService.get('APP_URL');
+
+    return urls?.map((url) => ({
+      destination: url.destination,
+      shortURL: `${appUrl}/${url.shortURL}`,
+      clicks: url.clicks,
+    }));
+  }
+
+  async deleteURL(urlId: number, userId: number) {
+    const url = await this.urlRepository.deleteURL(urlId, userId);
+
+    if (!url) {
+      throw new NotFoundException(
+        'URL informada nã encontrada ou usuário sem permissão para essa ação',
+      );
+    }
+
+    return { message: 'URL deletada com sucesso !' };
+  }
+
+  async updateURL(urlId: number, userId: number, destination: string) {
+    const update = await this.urlRepository.updateURL(
+      urlId,
+      userId,
+      destination,
+    );
+
+    if (!update) {
+      throw new NotFoundException(
+        'URL informada nã encontrada ou usuário sem permissão para essa ação',
+      );
+    }
+
+    return {
+      message: 'URL atualizada com sucesso !',
+      destination: update.destination,
+    };
   }
 }
