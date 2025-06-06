@@ -6,9 +6,20 @@ import { EnvModule } from 'env/env.module';
 import { JwtAuthModule } from 'libs/security/jwt.module';
 import { UrlRepository } from '../interfaces/url-repository';
 import { PrismaUrlRepository } from '../repositories/prisma-url-repository';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
+import { env } from './../../../env/env';
 
 @Module({
-  imports: [PrismaModule, EnvModule, JwtAuthModule],
+  imports: [
+    PrismaModule,
+    EnvModule,
+    JwtAuthModule,
+    PrometheusModule.register({
+      defaultMetrics: {
+        enabled: env.OBSERVABILITY_ENABLED,
+      },
+    }),
+  ],
   controllers: [UrlController],
   providers: [
     UrlService,

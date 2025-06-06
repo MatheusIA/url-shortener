@@ -12,4 +12,5 @@ export default {
   moduleNameMapper: {
     '^@app/prisma(|/.*)$': '<rootDir>/libs/prisma/src/$1',
   },
+  setupFiles: ['<rootDir>/jest.setup.ts'],
 };

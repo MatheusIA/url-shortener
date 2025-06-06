@@ -4,6 +4,7 @@ import { AuthenticateDTO } from 'apps/auth-service/dto/authenticate-DTO';
 import { JwtAuthService } from '../../../../libs/security/jwt.service';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthenticateResponseDTO } from 'apps/auth-service/dto/authenticate-response-DTO';
+import { AuthMetricsService } from '../metrics/auth-metrics.service';
 
 @ApiTags('Auth')
 @Controller('authenticate')
@@ -11,6 +12,7 @@ export class AuthenticateController {
   constructor(
     private readonly authenticateService: AuthenticateService,
     private readonly jwtAuthService: JwtAuthService,
+    private readonly metricsService: AuthMetricsService,
   ) {}
 
   @Post('/sessions')
@@ -30,6 +32,8 @@ export class AuthenticateController {
       id: user.id.toString(),
       email: user.email,
     });
+
+    this.metricsService.incrementLoginCount();
 
     return { token };
   }
