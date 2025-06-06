@@ -1,8 +1,12 @@
-FROM node:20.14
+FROM node:20-slim
 
+RUN apt-get update && \
+    apt-get install -y openssl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+    
 WORKDIR /usr/src/app
 
-# Copia os arquivos necessários
 COPY package*.json ./
 COPY nest-cli.json ./
 COPY tsconfig*.json ./
@@ -16,7 +20,7 @@ COPY env ./env
 RUN npm install
 RUN npx prisma generate
 
-# Faz build usando Nest
+# Faz build somente do auth-service
 RUN npm run build:auth
 
 # Executa

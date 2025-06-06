@@ -1,5 +1,10 @@
-FROM node:20.14
+FROM node:20-slim
 
+RUN apt-get update && \
+    apt-get install -y openssl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+    
 WORKDIR /usr/src/app
 
 COPY package*.json ./
