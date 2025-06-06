@@ -156,15 +156,21 @@ describe('UrlService', () => {
 
   describe('updateURL', () => {
     it('should update and return success message', async () => {
-      jest
-        .spyOn(urlRepository, 'updateURL')
-        .mockResolvedValue({ destination: 'https://updated.com' } as any);
+      jest.spyOn(urlRepository, 'updateURL').mockResolvedValue({
+        destination: 'https://updated.com',
+        urlShortened: 'abc123',
+      } as any);
+
+      (service['envService'].get as jest.Mock).mockReturnValue(
+        'https://short.ly',
+      );
 
       const result = await service.updateURL(1, 1, 'https://updated.com');
 
       expect(result).toEqual({
         message: 'URL atualizada com sucesso !',
         destination: 'https://updated.com',
+        urlShortened: 'https://short.ly/abc123',
       });
     });
 

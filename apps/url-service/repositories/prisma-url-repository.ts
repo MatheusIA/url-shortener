@@ -92,6 +92,10 @@ export class PrismaUrlRepository implements UrlRepository {
       },
     });
 
-    return { destination: updated.destination };
+    return {
+      message: 'URL atualizada com sucesso.',
+      destination: updated.destination,
+      urlShortened: updated.shortURL,
+    };
   }
 }

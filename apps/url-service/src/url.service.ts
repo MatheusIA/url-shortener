@@ -10,6 +10,7 @@ import { Url } from '@prisma/client';
 import { generateUrlShortener } from '../../../utils/generate-url-shortner';
 import { EnvService } from '../../../env/env.service';
 import { ResponseDeleteUrlDTO } from '../dto/response-delete-url-DTO';
+import { ResponseUpdateUrlDTO } from '../dto/response-update-url-DTO';
 
 @Injectable()
 export class UrlService {
@@ -93,7 +94,11 @@ export class UrlService {
     return { message: 'URL deletada com sucesso !' };
   }
 
-  async updateURL(urlId: number, userId: number, destination: string) {
+  async updateURL(
+    urlId: number,
+    userId: number,
+    destination: string,
+  ): Promise<ResponseUpdateUrlDTO> {
     const update = await this.urlRepository.updateURL(
       urlId,
       userId,
@@ -109,6 +114,7 @@ export class UrlService {
     return {
       message: 'URL atualizada com sucesso !',
       destination: update.destination,
+      urlShortened: `${this.envService.get('APP_URL')}/${update.urlShortened}`,
     };
   }
 }
