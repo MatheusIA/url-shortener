@@ -29,6 +29,7 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { RedirectUrlDTO } from '../dto/redirect-url-DTO';
+import { JwtPayload } from '../dto/types/jwt-payload.type';
 
 @Controller()
 export class UrlController {
@@ -52,11 +53,11 @@ export class UrlController {
     if (authorization) {
       const token = authorization.replace('Bearer ', '');
       try {
-        const payload = this.jwtService.verify(token);
+        const payload = this.jwtService.verify<JwtPayload>(token);
 
-        userId = payload.sub;
+        userId = payload.sub.toString();
       } catch (error) {
-        this.logger.warn('Token inválido ou expirado');
+        this.logger.warn('Token inválido ou expirado', error);
       }
     }
 
