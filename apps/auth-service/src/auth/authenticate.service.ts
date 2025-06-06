@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthenticateDTO } from 'apps/auth-service/dto/authenticate-DTO';
-import { UsersRepository } from 'apps/auth-service/interfaces/users-repository';
+import { UsersRepository } from '../../interfaces/users-repository';
 import { compare } from 'bcrypt';
 
 @Injectable()

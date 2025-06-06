@@ -18,22 +18,13 @@ export class UsersController {
   @Post('/register')
   async register(@Body() createUserDTO: CreateUserDTO): Promise<User> {
     const { email, name, password } = createUserDTO;
-    try {
-      const user = await this.registerUsersService.execute({
-        email,
-        name,
-        password,
-      });
 
-      return user;
-    } catch (error: any) {
-      this.logger.error('Erro ao criar usuário: ', error);
+    const user = await this.registerUsersService.execute({
+      email,
+      name,
+      password,
+    });
 
-      if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
-        throw new ConflictException('Email already registered');
-      }
-      throw new InternalServerErrorException('Unexpected error ocurred');
-      throw error;
-    }
+    return user;
   }
 }
