@@ -8,13 +8,21 @@ import { UsersRepository } from '../interfaces/users-repository';
 import { PrismaModule } from 'libs/prisma/src';
 import { JwtAuthModule } from '../../../libs/security/jwt.module';
 import { EnvModule } from 'env/env.module';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
+import { AuthMetricsService } from './metrics/auth-metrics.service';
 
 @Module({
-  imports: [PrismaModule, EnvModule, JwtAuthModule],
+  imports: [
+    PrismaModule,
+    EnvModule,
+    JwtAuthModule,
+    PrometheusModule.register(),
+  ],
   controllers: [AuthenticateController, UsersController],
   providers: [
     AuthenticateService,
     RegisterUsersService,
+    AuthMetricsService,
     {
       provide: UsersRepository,
       useClass: PrismaUsersRepository,
