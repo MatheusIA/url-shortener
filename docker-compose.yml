@@ -20,6 +20,11 @@ services:
       - postgres
     env_file:
       - .env
+    command: >
+      sh -c "
+        npx prisma migrate deploy &&
+        node dist/apps/auth-service/main.js
+      "
   url-service:
     build:
       context: .
@@ -30,3 +35,8 @@ services:
       - postgres
     env_file:
       - .env
+    command: >
+      sh -c "
+        npx prisma migrate deploy &&
+        node dist/apps/url-service/main.js
+      "

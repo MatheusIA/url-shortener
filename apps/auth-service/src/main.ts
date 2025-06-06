@@ -25,7 +25,15 @@ async function fastify() {
     .setTitle('Authenticate Service')
     .setDescription('API para autenticação e gerenciamento de usuários')
     .setVersion('1.0')
-    .addBearerAuth()
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        in: 'header',
+      },
+      'access-token',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

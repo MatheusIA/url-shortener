@@ -46,6 +46,7 @@ export class PrismaUrlRepository implements UrlRepository {
         deletedAt: null,
       },
       select: {
+        id: true,
         destination: true,
         shortURL: true,
         clicks: true,

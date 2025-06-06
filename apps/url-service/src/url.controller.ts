@@ -28,7 +28,6 @@ import {
   ApiParam,
   ApiResponse,
 } from '@nestjs/swagger';
-import { RedirectUrlDTO } from '../dto/redirect-url-DTO';
 import { JwtPayload } from '../dto/types/jwt-payload.type';
 
 @Controller()
@@ -42,6 +41,7 @@ export class UrlController {
   @Post('url/shorten')
   @ApiOperation({ summary: 'Rota para criar uma URL encurtada' })
   @ApiBody({ type: CreateUrlDTO })
+  @ApiBearerAuth('access-token')
   @ApiResponse({ status: 201, description: 'URL encurtada criada com sucesso' })
   async create(
     @Body() createUrl: CreateUrlDTO,
@@ -80,10 +80,10 @@ export class UrlController {
   @ApiParam({ name: 'shortURL', description: 'Código da URL encurtada' })
   @ApiResponse({ status: 302, description: 'Redireciona para a URL original' })
   async redirect(
-    @Param('shortURL') shortURL: RedirectUrlDTO,
+    @Param('shortURL') shortURL: string,
     @Res() reply: FastifyReply,
   ) {
-    const destination = await this.urlService.redirect(shortURL.shortURL);
+    const destination = await this.urlService.redirect(shortURL);
 
     if (!destination) {
       throw new NotFoundException('URL não encontrada');
@@ -94,7 +94,7 @@ export class UrlController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/my-urls')
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Lista as URLs encurtadas do usuário autenticado' })
   @ApiResponse({ status: 200, description: 'Lista de URLs' })
   async listMyUrls(@CurrentUser() user: JwtPayloadDTO) {
@@ -106,7 +106,7 @@ export class UrlController {
 
   @UseGuards(JwtAuthGuard)
   @Delete('url/:urlId')
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Deleta uma URL do usuário autenticado' })
   @ApiParam({ name: 'urlId', type: String })
   @ApiResponse({ status: 200, description: 'URL deletada com sucesso' })
@@ -123,7 +123,7 @@ export class UrlController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('url/:urlId')
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Atualiza a URL de destino de uma URL encurtada' })
   @ApiParam({ name: 'urlId', type: String })
   @ApiBody({ type: UpdateUrlDTO })

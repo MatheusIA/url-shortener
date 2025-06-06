@@ -71,6 +71,7 @@ export class UrlService {
     const appUrl = this.envService.get('APP_URL');
 
     return urls?.map((url) => ({
+      id: url.id,
       destination: url.destination,
       shortURL: `${appUrl}/${url.shortURL}`,
       clicks: url.clicks,
