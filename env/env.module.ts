@@ -7,7 +7,16 @@ import { envSchema } from './env';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      validate: (env) => envSchema.parse(env),
+      validate: (config) => {
+        const result = envSchema.safeParse(config);
+        if (!result.success) {
+          throw new Error(
+            'Environment validation error: ' +
+              JSON.stringify(result.error.format(), null, 2),
+          );
+        }
+        return result.data;
+      },
     }),
   ],
   providers: [EnvService],

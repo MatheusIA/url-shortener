@@ -1,12 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { Env } from './env';
+import { envSchema, Env } from '../env/env';
 
 @Injectable()
 export class EnvService {
-  constructor(private configService: ConfigService<Env, true>) {}
+  private readonly env: Env;
 
-  get<T extends keyof Env>(key: T) {
-    return this.configService.get(key, { infer: true });
+  constructor() {
+    const parsed = envSchema.safeParse(process.env);
+    if (!parsed.success) {
+      console.error('Invalid environment variables:', parsed.error.format());
+      throw new Error('Invalid environment variables');
+    }
+    this.env = parsed.data;
+  }
+
+  get<T extends keyof Env>(key: T): Env[T] {
+    return this.env[key]; // <-- type assertion para ajudar o TS
   }
 }
