@@ -12,11 +12,12 @@ import {
   Request,
   Delete,
   Patch,
+  Req,
 } from '@nestjs/common';
 import { UrlService } from './url.service';
 import { CreateUrlDTO } from '../dto/create-url-DTO';
 import { JwtService } from '@nestjs/jwt';
-import { FastifyReply } from 'fastify';
+import { FastifyReply, FastifyRequest } from 'fastify';
 import { JwtAuthGuard } from 'libs/security/jwt-auth.guard';
 import { CurrentUser } from '../decorator/current-user.decorator';
 import { JwtPayloadDTO } from '../dto/jwt-payload-DTO';
@@ -29,6 +30,7 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { JwtPayload } from '../dto/types/jwt-payload.type';
+import { ResponseUpdateUrlDTO } from '../dto/response-update-url-DTO';
 
 @Controller()
 export class UrlController {
@@ -45,10 +47,20 @@ export class UrlController {
   @ApiResponse({ status: 201, description: 'URL encurtada criada com sucesso' })
   async create(
     @Body() createUrl: CreateUrlDTO,
-    @Headers('authorization') authorization?: string,
+    @Req() req: FastifyRequest,
   ): Promise<{ shortURL: string }> {
     const { originalUrl } = createUrl;
     let userId: string | undefined;
+
+    const rawAuth =
+      req.headers['authorization'] || req.headers['Authorization'];
+    let authorization: string | undefined;
+
+    if (Array.isArray(rawAuth)) {
+      authorization = rawAuth[0];
+    } else {
+      authorization = rawAuth;
+    }
 
     if (authorization) {
       const token = authorization.replace('Bearer ', '');
@@ -127,7 +139,11 @@ export class UrlController {
   @ApiOperation({ summary: 'Atualiza a URL de destino de uma URL encurtada' })
   @ApiParam({ name: 'urlId', type: String })
   @ApiBody({ type: UpdateUrlDTO })
-  @ApiResponse({ status: 200, description: 'URL atualizada com sucesso' })
+  @ApiResponse({
+    status: 200,
+    description: 'URL atualizada com sucesso',
+    type: ResponseUpdateUrlDTO,
+  })
   async updateUrl(
     @Param('urlId') id: string,
     @CurrentUser() user: JwtPayloadDTO,
