@@ -48,6 +48,7 @@ export class UrlService {
         shortURL: `${this.envService.get('APP_URL')}/${urlShortener}`,
       };
     } catch (error) {
+      this.logger.error('Erro ao criar URL', error);
       throw new InternalServerErrorException('Erro ao criar URL');
     }
   }

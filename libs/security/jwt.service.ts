@@ -1,9 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { EnvService } from 'env/env.service';
 
 @Injectable()
 export class JwtAuthService {
+  private readonly logger = new Logger(JwtAuthService.name);
+
   constructor(
     private readonly jwtService: JwtService,
     private readonly envService: EnvService,
@@ -28,6 +30,7 @@ export class JwtAuthService {
         secret: this.envService.get('JWT_SECRET'),
       });
     } catch (error) {
+      this.logger.warn('Token inválido ou expirado', error);
       return null;
     }
   }
