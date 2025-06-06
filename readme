@@ -1,0 +1,12 @@
+- [x] Cadastro de Usuario
+- [X] Autenticação
+- [X] Envio da url e retornar o encurtado
+
+Usuario autenticado
+
+- [X] Pode listar os urls encurtados por ele
+- [X] Pode editar o endereço de destino
+- [X] Pode excluir URLS encurtados por ele
+
+- [] Todo acesso ao qualquer url encurtado deve ser contabilizado
+- [] Quando um usuário listar os URLs deve aparecer na listagem a quantidade de cliques.

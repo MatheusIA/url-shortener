@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
+import { UserAlreadyExistsError } from 'apps/auth-service/src/_errors/user-already-exists-error';
 import { FastifyReply, FastifyRequest } from 'fastify';
 
 @Catch()
@@ -32,6 +33,9 @@ export class AllExceptionFilter implements ExceptionFilter {
       status = HttpStatus.INTERNAL_SERVER_ERROR;
       message = { message: exception.message || 'Internal server error' };
       stack = exception.stack;
+    } else if (exception instanceof UserAlreadyExistsError) {
+      status = HttpStatus.CONFLICT;
+      message = { message: exception.message };
     } else {
       status = HttpStatus.INTERNAL_SERVER_ERROR;
       message = { message: 'Internal server error' };

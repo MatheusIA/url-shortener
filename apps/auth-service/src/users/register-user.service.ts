@@ -3,6 +3,7 @@ import { UsersRepository } from '../../interfaces/users-repository';
 import { CreateUserDTO } from '../../dto/register-user-DTO';
 import { User } from '@prisma/client';
 import { hash } from 'bcrypt';
+import { UserAlreadyExistsError } from '../_errors/user-already-exists-error';
 
 @Injectable()
 export class RegisterUsersService {
@@ -11,21 +12,22 @@ export class RegisterUsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
   async execute(createUserDTO: CreateUserDTO): Promise<User> {
-    try {
-      const { email, name, password } = createUserDTO;
+    const { email, name, password } = createUserDTO;
 
-      const password_hash = await hash(password, 6);
-
-      const user = await this.usersRepository.createUser({
-        name,
-        email,
-        password: password_hash,
-      });
-
-      return user;
-    } catch (error) {
-      this.logger.error('Error during user registration: ', error);
-      throw error;
+    const usersExists = await this.usersRepository.findByEmail(email);
+    if (usersExists) {
+      this.logger.warn(`User with email ${email} already exists`);
+      throw new UserAlreadyExistsError();
     }
+
+    const password_hash = await hash(password, 6);
+
+    const user = await this.usersRepository.createUser({
+      name,
+      email,
+      password: password_hash,
+    });
+
+    return user;
   }
 }

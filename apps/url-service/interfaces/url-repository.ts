@@ -14,7 +14,7 @@ export abstract class UrlRepository {
   abstract deleteURL(
     urlId: number,
     userId: number,
-  ): Promise<ResponseDeleteUrlDTO>;
+  ): Promise<ResponseDeleteUrlDTO | null>;
   abstract updateURL(
     urlId: number,
     userId: number,

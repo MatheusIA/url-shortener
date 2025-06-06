@@ -1,39 +1,39 @@
-import {
-  Body,
-  ConflictException,
-  Controller,
-  InternalServerErrorException,
-  Logger,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Logger, Post } from '@nestjs/common';
 import { RegisterUsersService } from './register-user.service';
 import { CreateUserDTO } from 'apps/auth-service/dto/register-user-DTO';
-import { User } from '@prisma/client';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { RegisterUserResponseDTO } from 'apps/auth-service/dto/register-user-response-DTO';
 
+@ApiTags('Users')
 @Controller('users')
 export class UsersController {
   private readonly logger = new Logger(UsersController.name);
   constructor(private readonly registerUsersService: RegisterUsersService) {}
 
   @Post('/register')
-  async register(@Body() createUserDTO: CreateUserDTO): Promise<User> {
+  @ApiOperation({ summary: 'Registra um novo usuário' })
+  @ApiBody({ type: CreateUserDTO })
+  @ApiResponse({
+    status: 201,
+    description: 'Usuário registrado com sucesso',
+    type: RegisterUserResponseDTO,
+  })
+  @ApiResponse({ status: 409, description: 'Usuário já existe' })
+  async register(
+    @Body() createUserDTO: CreateUserDTO,
+  ): Promise<RegisterUserResponseDTO> {
     const { email, name, password } = createUserDTO;
-    try {
-      const user = await this.registerUsersService.execute({
-        email,
-        name,
-        password,
-      });
 
-      return user;
-    } catch (error: any) {
-      this.logger.error('Erro ao criar usuário: ', error);
+    const user = await this.registerUsersService.execute({
+      email,
+      name,
+      password,
+    });
 
-      if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
-        throw new ConflictException('Email already registered');
-      }
-      throw new InternalServerErrorException('Unexpected error ocurred');
-      throw error;
-    }
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+    };
   }
 }

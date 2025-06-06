@@ -7,8 +7,9 @@ import {
 import { UrlRepository } from '../interfaces/url-repository';
 import { CreateUrlDTO } from '../dto/create-url-DTO';
 import { Url } from '@prisma/client';
-import { generateUrlShortener } from 'utils/generate-url-shortner';
-import { EnvService } from 'env/env.service';
+import { generateUrlShortener } from '../../../utils/generate-url-shortner';
+import { EnvService } from '../../../env/env.service';
+import { ResponseDeleteUrlDTO } from '../dto/response-delete-url-DTO';
 
 @Injectable()
 export class UrlService {
@@ -51,18 +52,16 @@ export class UrlService {
     }
   }
 
-  async redirect(shortURL: string): Promise<any> {
-    try {
-      const url = await this.urlRepository.findByShortURL(shortURL);
+  async redirect(shortURL: string): Promise<string | undefined> {
+    const url = await this.urlRepository.findByShortURL(shortURL);
 
-      if (!url) {
-        throw new NotFoundException('URL não encontrada');
-      }
+    if (!url) {
+      throw new NotFoundException('URL não encontrada');
+    }
 
-      await this.urlRepository.incrementClicks(url.id);
+    await this.urlRepository.incrementClicks(url.id);
 
-      return url.destination;
-    } catch (error) {}
+    return url.destination;
   }
 
   async listMyUrls(userId: number) {
@@ -77,12 +76,15 @@ export class UrlService {
     }));
   }
 
-  async deleteURL(urlId: number, userId: number) {
+  async deleteURL(
+    urlId: number,
+    userId: number,
+  ): Promise<ResponseDeleteUrlDTO> {
     const url = await this.urlRepository.deleteURL(urlId, userId);
 
     if (!url) {
       throw new NotFoundException(
-        'URL informada nã encontrada ou usuário sem permissão para essa ação',
+        'URL informada não encontrada ou usuário sem permissão para essa ação',
       );
     }
 
