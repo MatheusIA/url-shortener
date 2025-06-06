@@ -7,11 +7,13 @@ import {
 import { ValidationPipe } from '@nestjs/common';
 import { AllExceptionFilter } from 'utils/http-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { CustomLoggerService } from 'libs/custom-logger.service';
 
 async function fastify() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AuthServiceModule,
     new FastifyAdapter(),
+    { logger: new CustomLoggerService() },
   );
   app.useGlobalPipes(
     new ValidationPipe({

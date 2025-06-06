@@ -5,11 +5,13 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { CustomLoggerService } from 'libs/custom-logger.service';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     UrlServiceModule,
     new FastifyAdapter(),
+    { logger: new CustomLoggerService() },
   );
 
   const config = new DocumentBuilder()
