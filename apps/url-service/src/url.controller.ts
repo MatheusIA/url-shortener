@@ -21,6 +21,14 @@ import { JwtAuthGuard } from 'libs/security/jwt-auth.guard';
 import { CurrentUser } from '../decorator/current-user.decorator';
 import { JwtPayloadDTO } from '../dto/jwt-payload-DTO';
 import { UpdateUrlDTO } from '../dto/update-url-DTO';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+} from '@nestjs/swagger';
+import { RedirectUrlDTO } from '../dto/redirect-url-DTO';
 
 @Controller()
 export class UrlController {
@@ -31,6 +39,9 @@ export class UrlController {
   ) {}
 
   @Post('url/shorten')
+  @ApiOperation({ summary: 'Rota para criar uma URL encurtada' })
+  @ApiBody({ type: CreateUrlDTO })
+  @ApiResponse({ status: 201, description: 'URL encurtada criada com sucesso' })
   async create(
     @Body() createUrl: CreateUrlDTO,
     @Headers('authorization') authorization?: string,
@@ -62,11 +73,16 @@ export class UrlController {
   }
 
   @Get('/:shortURL')
+  @ApiOperation({
+    summary: 'Rota para redirecionar uma URL encurtada, para a URL original',
+  })
+  @ApiParam({ name: 'shortURL', description: 'Código da URL encurtada' })
+  @ApiResponse({ status: 302, description: 'Redireciona para a URL original' })
   async redirect(
-    @Param('shortURL') shortURL: string,
+    @Param('shortURL') shortURL: RedirectUrlDTO,
     @Res() reply: FastifyReply,
   ) {
-    const destination = await this.urlService.redirect(shortURL);
+    const destination = await this.urlService.redirect(shortURL.shortURL);
 
     if (!destination) {
       throw new NotFoundException('URL não encontrada');
@@ -77,6 +93,9 @@ export class UrlController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/my-urls')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Lista as URLs encurtadas do usuário autenticado' })
+  @ApiResponse({ status: 200, description: 'Lista de URLs' })
   async listMyUrls(@CurrentUser() user: JwtPayloadDTO) {
     const userId = Number(user.sub);
     const urls = await this.urlService.listMyUrls(userId);
@@ -86,6 +105,10 @@ export class UrlController {
 
   @UseGuards(JwtAuthGuard)
   @Delete('url/:urlId')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Deleta uma URL do usuário autenticado' })
+  @ApiParam({ name: 'urlId', type: String })
+  @ApiResponse({ status: 200, description: 'URL deletada com sucesso' })
   async deleteURL(
     @Param('urlId') id: string,
     @CurrentUser() user: JwtPayloadDTO,
@@ -99,6 +122,11 @@ export class UrlController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('url/:urlId')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Atualiza a URL de destino de uma URL encurtada' })
+  @ApiParam({ name: 'urlId', type: String })
+  @ApiBody({ type: UpdateUrlDTO })
+  @ApiResponse({ status: 200, description: 'URL atualizada com sucesso' })
   async updateUrl(
     @Param('urlId') id: string,
     @CurrentUser() user: JwtPayloadDTO,

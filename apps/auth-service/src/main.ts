@@ -6,6 +6,7 @@ import {
 } from '@nestjs/platform-fastify';
 import { ValidationPipe } from '@nestjs/common';
 import { AllExceptionFilter } from 'utils/http-exception.filter';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function fastify() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -14,11 +15,20 @@ async function fastify() {
   );
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, // Remove dados não declarados nos DTOs
-      forbidNonWhitelisted: true, // Lança erro se vier campos além dos esperados
-      transform: true, // Faz transformação automática dos dados
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
     }),
   );
+
+  const config = new DocumentBuilder()
+    .setTitle('Authenticate Service')
+    .setDescription('API para autenticação e gerenciamento de usuários')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
 
   app.enableCors();
   app.useGlobalFilters(new AllExceptionFilter());
