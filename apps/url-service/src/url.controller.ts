@@ -31,6 +31,7 @@ import {
 } from '@nestjs/swagger';
 import { JwtPayload } from '../dto/types/jwt-payload.type';
 import { ResponseUpdateUrlDTO } from '../dto/response-update-url-DTO';
+import { UrlMetricsService } from './metrics/url-metrics.service';
 
 @Controller()
 export class UrlController {
@@ -38,6 +39,7 @@ export class UrlController {
   constructor(
     private readonly urlService: UrlService,
     private readonly jwtService: JwtService,
+    private readonly urlMetricsService: UrlMetricsService,
   ) {}
 
   @Post('url/shorten')
@@ -79,6 +81,8 @@ export class UrlController {
       },
       userId,
     );
+
+    this.urlMetricsService.incrementUrlCount();
 
     return {
       shortURL: url.shortURL,
