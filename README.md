@@ -7,8 +7,8 @@ Este repositório contém dois microsserviços construidos com [Nest](https://gi
 
 ## Links do Ambiente em Nuvem
 
-- **auth-service**: https://auth-service-z2vf.onrender.com/
-- **url-service**: https://url-service-mt8s.onrender.com/
+- **auth-service**: https://auth-service-z2vf.onrender.com/api
+- **url-service**: https://url-service-mt8s.onrender.com/api
 
 ## Atenção sobre o Delay no Plano Free do Render
 
