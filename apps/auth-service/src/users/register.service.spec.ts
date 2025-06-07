@@ -30,7 +30,6 @@ describe('Register Service', () => {
     } as unknown as UsersRepository;
 
     service = new RegisterUsersService(usersRepository);
-    // mockedBcrypt = jest.mocked(bcrypt, { shallow: true });
   });
 
   afterEach(() => {

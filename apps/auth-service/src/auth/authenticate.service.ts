@@ -25,7 +25,8 @@ export class AuthenticateService {
 
     const doesPasswordMatch = await compare(password, user.password);
 
-    if (!user || !doesPasswordMatch) {
+    if (!doesPasswordMatch) {
+      this.logger.warn(`Invalid password attempt for email: ${email}`);
       throw new UnauthorizedException('Invalid email or password');
     }
 

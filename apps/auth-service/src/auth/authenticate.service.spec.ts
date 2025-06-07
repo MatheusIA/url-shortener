@@ -49,14 +49,14 @@ describe('Authenticate Service', () => {
     mockedBcrypt.compare.mockResolvedValue(true as never);
 
     const result = await service.authenticate({
-      email: 'jonhdoe@example.com',
+      email: 'johndoe@example.com',
       password: '123456',
     });
 
     expect(result).toEqual({ user: fakeUser });
     // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(usersRepository.findByEmail).toHaveBeenCalledWith(
-      'jonhdoe@example.com',
+      'johndoe@example.com',
     );
     expect(mockedBcrypt.compare).toHaveBeenCalledWith(
       '123456',
@@ -69,7 +69,7 @@ describe('Authenticate Service', () => {
 
     await expect(
       service.authenticate({
-        email: 'jonhdoe@example.com',
+        email: 'johndoe@example.com',
         password: '123456',
       }),
     ).rejects.toThrowError(new NotFoundException('User with email not found'));
@@ -93,7 +93,7 @@ describe('Authenticate Service', () => {
 
     await expect(
       service.authenticate({
-        email: 'jonhdoe@example.com',
+        email: 'johndoe@example.com',
         password: '123456',
       }),
     ).rejects.toThrowError(
