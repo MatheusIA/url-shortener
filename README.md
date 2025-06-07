@@ -88,3 +88,66 @@ Em ambiente de produção ( nuvem ), a documentação fica disponivel através d
 
 auth-service: https://auth-service-z2vf.onrender.com/api
 url-service: https://url-service-mt8s.onrender.com/api
+
+## Observabilidade
+
+Este projeto possui instrumentação de observabilidade com suporte a métricas utilizando o Prometheus.
+
+O serviço url-service expõe as métricas por meio do endpoint HTTP no formato padrão text/plain.
+
+- Endpoint de métricas ( em ambiente local ):
+
+````bash
+http://localhost:3002/metrics
+````
+
+- Endpoint de métricas ( em ambiente cloud ):
+
+````bash
+https://url-service-mt8s.onrender.com/metrics
+````
+
+- Exemplo da métrica exposta:
+
+````bash
+# HELP url_shortened_total Total de URLs encurtadas
+# TYPE url_shortened_total counter
+url_shortened_total 42
+````
+
+O serviço auth-service expõe as métricas por meio do endpoint HTTP no formato padrão text/plain.
+
+- Endpoint de métricas ( em ambiente local ):
+
+````bash
+http://localhost:3001/metrics
+````
+
+- Endpoint de métricas ( em ambiente cloud ):
+
+````bash
+https://auth-service-z2vf.onrender.com/metrics
+````
+
+- Exemplo da métrica exposta:
+
+````bash
+# HELP auth_login_total Total de logins realizados
+# TYPE auth_login_total counter
+auth_login_total 50
+
+# HELP auth_register_total Total de registros realizados
+# TYPE auth_register_total counter
+auth_register_total 10
+````
+
+## Variável de Ambiente
+
+Para ativar ou desativas a exportação das métricas, utilize a váriavel de ambiente:
+
+````bash
+OBSERVABILITY_ENABLED=true
+````
+
+Quando true, o serviço expõe o endpoint de métricas.
+Quando false, o endpoint de métricas pode ser desativado
