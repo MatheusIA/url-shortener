@@ -8,6 +8,7 @@ import { UrlRepository } from '../interfaces/url-repository';
 import { PrismaUrlRepository } from '../repositories/prisma-url-repository';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { env } from './../../../env/env';
+import { UrlMetricsService } from './metrics/url-metrics.service';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { env } from './../../../env/env';
   controllers: [UrlController],
   providers: [
     UrlService,
+    UrlMetricsService,
     {
       provide: UrlRepository,
       useClass: PrismaUrlRepository,

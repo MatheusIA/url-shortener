@@ -10,19 +10,26 @@ import { JwtAuthModule } from '../../../libs/security/jwt.module';
 import { EnvModule } from 'env/env.module';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { AuthMetricsService } from './metrics/auth-metrics.service';
+import { RegisterMetricsService } from './metrics/register-metrics.service';
+import { env } from 'env/env';
 
 @Module({
   imports: [
     PrismaModule,
     EnvModule,
     JwtAuthModule,
-    PrometheusModule.register(),
+    PrometheusModule.register({
+      defaultMetrics: {
+        enabled: env.OBSERVABILITY_ENABLED,
+      },
+    }),
   ],
   controllers: [AuthenticateController, UsersController],
   providers: [
     AuthenticateService,
     RegisterUsersService,
     AuthMetricsService,
+    RegisterMetricsService,
     {
       provide: UsersRepository,
       useClass: PrismaUsersRepository,
