@@ -31,6 +31,13 @@ ara reduzir esse impacto, recomenda-se utilizar serviços de monitoramento como 
 
 Com isso, a aplicação receberá tráfego constante e reduzirá o tempo de resposta causado pela hibernação do plano gratuito.
 
+## Requisitos de Ambiente
+
+- Node.js v20.x
+- npm v9 ou superior
+- Docker e Docker Compose (caso use containers)
+
+> Para desenvolvedores: utilize `nvm use` se você tem `.nvmrc` configurado
 
 ## Configuração do Projeto
 
