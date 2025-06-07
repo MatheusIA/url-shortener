@@ -4,20 +4,18 @@ import {
   Get,
   Logger,
   Post,
-  Headers,
   Param,
   NotFoundException,
-  Res,
   UseGuards,
-  Request,
   Delete,
   Patch,
   Req,
+  Redirect,
 } from '@nestjs/common';
 import { UrlService } from './url.service';
 import { CreateUrlDTO } from '../dto/create-url-DTO';
 import { JwtService } from '@nestjs/jwt';
-import { FastifyReply, FastifyRequest } from 'fastify';
+import { FastifyRequest } from 'fastify';
 import { JwtAuthGuard } from 'libs/security/jwt-auth.guard';
 import { CurrentUser } from '../decorator/current-user.decorator';
 import { JwtPayloadDTO } from '../dto/jwt-payload-DTO';
@@ -95,17 +93,17 @@ export class UrlController {
   })
   @ApiParam({ name: 'shortURL', description: 'Código da URL encurtada' })
   @ApiResponse({ status: 302, description: 'Redireciona para a URL original' })
-  async redirect(
-    @Param('shortURL') shortURL: string,
-    @Res() reply: FastifyReply,
-  ) {
+  @Redirect()
+  async redirect(@Param('shortURL') shortURL: string) {
     const destination = await this.urlService.redirect(shortURL);
 
     if (!destination) {
       throw new NotFoundException('URL não encontrada');
     }
 
-    return reply.redirect(destination);
+    console.log(`Redirecionando para: ${destination} - Short URL: ${shortURL}`);
+
+    return { url: destination, statusCode: 302 };
   }
 
   @UseGuards(JwtAuthGuard)
