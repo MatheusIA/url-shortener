@@ -10,6 +10,28 @@ Este repositório contém dois microsserviços construidos com [Nest](https://gi
 - **auth-service**: https://auth-service-z2vf.onrender.com/
 - **url-service**: https://url-service-mt8s.onrender.com/
 
+## Atenção sobre o Delay no Plano Free do Render
+
+Esta aplicação está hospedada no plano gratuito do Render, que coloca o serviço em modo de hibernação após um período de inatividade (cerca de 15 minutos). Quando o serviço é acessado novamente após estar ocioso, ele precisa de um tempo para "acordar".
+
+Esse atraso no "cold start" pode levar aproximadamente 10 a 30 segundos, fazendo com que a primeira requisição após a inatividade seja mais lenta ou até resulte em timeout em alguns casos.
+
+# Como minimizar o delay usando o Uptime Robot
+
+ara reduzir esse impacto, recomenda-se utilizar serviços de monitoramento como o **Uptime Robot** para manter a aplicação "acordada". Ele envia requisições periódicas para a URL da aplicação, impedindo que entre em hibernação.
+
+### Passos para configurar o Uptime Robot:
+
+1. Crie uma conta gratuita em [uptimerobot.com](https://uptimerobot.com).
+2. Clique em "Add New Monitor".
+3. Escolha o tipo de monitor **HTTP(s)**.
+4. Insira o nome e a URL da sua aplicação hospedada no Render  (exemplo: https://meu-app.onrender.com).
+5. Defina o intervalo de checagem para 5 minutos (mínimo no plano gratuito).
+6. Salve e ative o monitor.
+
+Com isso, a aplicação receberá tráfego constante e reduzirá o tempo de resposta causado pela hibernação do plano gratuito.
+
+
 ## Configuração do Projeto
 
 Para começar, instale as dependências do projeto:
@@ -143,7 +165,7 @@ auth_register_total 10
 
 ## Variável de Ambiente
 
-Para ativar ou desativas a exportação das métricas, utilize a váriavel de ambiente:
+Para ativar ou desativas a exportação das métricas, utilize a varivel de ambiente:
 
 ````bash
 OBSERVABILITY_ENABLED=true
